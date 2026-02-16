@@ -78,6 +78,7 @@ body { background: var(--gray); font-family: 'Segoe UI', sans-serif; margin: 0; 
     .p-meta { display: flex; justify-content: space-between; margin: 20px 0; }
     .p-meta p { font-weight: bold; margin: 5px 0; }
     .p-cust { font-weight: bold; }
+    .table-title { text-align: center; font-weight: bold; text-decoration: underline; font-size: 1.2rem; margin: 25px 0 20px 0; text-transform: uppercase; }
     .p-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     .p-table th { border: 2px solid black; padding: 12px; font-weight: bold; text-align: left; background: #f0f0f0; }
     .p-table td { border: 2px solid black; padding: 12px; font-weight: bold; }
@@ -88,4 +89,5 @@ body { background: var(--gray); font-family: 'Segoe UI', sans-serif; margin: 0; 
     .p-summary span { font-weight: 900; font-size: 1.5rem; }
     .bank-details { margin-top: 40px; border-top: 2px solid #333; padding-top: 20px; }
     .bank-details p { margin: 5px 0; font-size: 13px; font-weight: bold; }
-}
+                 }
+                 
