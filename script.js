@@ -9,6 +9,7 @@ function billingSystem() {
         doc: {
             type: 'TAX INVOICE',
             customer: '',
+            title: '',
             number: 'SAM-' + Math.floor(100 + Math.random() * 900),
             date: new Date().toLocaleDateString('en-GB').replace(/\//g, '-'),
             items: [{ qty: '1', desc: '', price: 0 }]
@@ -57,4 +58,5 @@ function billingSystem() {
             }
         }
     }
-}
+                                          }
+                
