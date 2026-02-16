@@ -73,6 +73,11 @@
                         <input type="text" x-model="doc.number">
                     </div>
                 </div>
+                
+                <div class="input-group" style="margin-bottom: 25px;">
+                    <label>Invoice Title/Description</label>
+                    <input type="text" x-model="doc.title" placeholder="e.g. REPLACEMENT OF ACCESS CONTROL READER">
+                </div>
 
                 <div class="table-responsive">
                     <table class="items-table">
@@ -163,6 +168,9 @@
                 <p>Invoice No: <span x-text="doc.number"></span></p>
             </div>
         </div>
+        
+        <h3 class="table-title" x-text="doc.title ? doc.title.toUpperCase() : 'INVOICE DESCRIPTION'"></h3>
+        
         <table class="p-table">
             <thead>
                 <tr>
