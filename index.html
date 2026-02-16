@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMOS SYSTEM | Kadili Dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body x-data="billingSystem()" x-init="init()">
+
+    <div x-show="!isLoggedIn" class="login-wrapper">
+        <div class="login-card">
+            <img src="https://i.ibb.co/4nkx6sFd/image-1-removebg-preview.webp" alt="Logo">
+            <h1>SAMOS TECH SOLUTIONS</h1>
+            <div class="login-form">
+                <input type="email" x-model="loginEmail" placeholder="Email Address">
+                <input type="password" x-model="loginPass" placeholder="Password">
+                <button @click="login()">LOGIN TO SYSTEM</button>
+            </div>
+            <p class="dev-tag">Created by Kadili Dev</p>
+        </div>
+    </div>
+
+    <div x-show="isLoggedIn" class="dashboard-layout no-print">
+        
+        <header class="mobile-header lg:hidden">
+            <button @click="mobileMenu = !mobileMenu" class="menu-toggle">
+                <span></span><span></span><span></span>
+            </button>
+            <span class="mobile-title">SAMOS TECH</span>
+        </header>
+
+        <aside class="sidebar" :class="mobileMenu ? 'active' : ''">
+            <div class="sidebar-brand">
+                <img src="https://i.ibb.co/4nkx6sFd/image-1-removebg-preview.webp">
+                <p>SAMOS TECHNICALLY</p>
+                <button @click="mobileMenu = false" class="close-menu lg:hidden">&times;</button>
+            </div>
+            <nav class="nav-menu">
+                <a @click="view='create'; mobileMenu=false" :class="view==='create' ? 'active' : ''">📝 New Invoice</a>
+                <a @click="view='history'; mobileMenu=false" :class="view==='history' ? 'active' : ''">📂 History</a>
+                <a @click="logout()" class="logout-link">🚪 Logout</a>
+            </nav>
+            <div class="sidebar-footer">
+                <p>KADILI DEV v2.0</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div x-show="view === 'create'" class="content-card">
+                <div class="card-header">
+                    <h2 x-text="doc.type"></h2>
+                    <select x-model="doc.type" class="type-select">
+                        <option>TAX INVOICE</option>
+                        <option>PROFORMA INVOICE</option>
+                        <option>DELIVERY NOTE</option>
+                    </select>
+                </div>
+
+                <div class="info-grid">
+                    <div class="input-group">
+                        <label>Customer Name</label>
+                        <input type="text" x-model="doc.customer" placeholder="e.g. JICA TANZANIA">
+                    </div>
+                    <div class="input-group">
+                        <label>Date</label>
+                        <input type="text" x-model="doc.date">
+                    </div>
+                    <div class="input-group">
+                        <label>Invoice Number</label>
+                        <input type="text" x-model="doc.number">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Qty</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(item, index) in doc.items" :key="index">
+                                <tr>
+                                    <td width="10%"><input type="text" x-model="item.qty"></td>
+                                    <td width="55%"><input type="text" x-model="item.desc"></td>
+                                    <td width="15%"><input type="number" x-model="item.price"></td>
+                                    <td width="15%" class="row-total" x-text="formatMoney(item.qty * item.price)"></td>
+                                    <td width="5%"><button @click="removeItem(index)" class="btn-del">&times;</button></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <button @click="addItem()" class="btn-add">+ Add Item</button>
+
+                <div class="footer-summary">
+                    <div class="total-display">
+                        <p>GRAND TOTAL (TZS)</p>
+                        <h3 x-text="formatMoney(calcTotal())"></h3>
+                    </div>
+                    <button @click="saveAndPrint()" class="btn-print">GENERATE & PRINT</button>
+                </div>
+            </div>
+
+            <div x-show="view === 'history'" class="content-card">
+                <h2>Recent Records</h2>
+                <div class="table-responsive">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="rec in history" :key="rec.id">
+                                <tr>
+                                    <td x-text="rec.date"></td>
+                                    <td x-text="rec.customer" class="font-bold"></td>
+                                    <td x-text="formatMoney(rec.total)" class="text-orange-600"></td>
+                                    <td>
+                                        <button @click="printSaved(rec)" class="btn-s print">Print</button>
+                                        <button @click="deleteDoc(rec.id)" class="btn-s delete">Delete</button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="print-only">
+        <div class="p-header">
+            <div class="p-brand">
+                <img src="https://i.ibb.co/4nkx6sFd/image-1-removebg-preview.webp">
+            </div>
+            <div class="p-contact">
+                <p>+255 784 042 020 / +255 784 260 207</p>
+                <p>samostechtz@gmail.com</p>
+                <p>amosmassam@gmail.com</p>
+                <p>Box 14928 Arusha & Dodoma, Tanzania</p>
+            </div>
+        </div>
+        <h2 class="p-title" x-text="doc.type"></h2>
+        <div class="p-meta">
+            <div>
+                <p>TIN: 164-564-452</p>
+                <p class="p-cust">Customer: <span x-text="doc.customer"></span></p>
+            </div>
+            <div class="text-right">
+                <p>Date: <span x-text="doc.date"></span></p>
+                <p>Invoice No: <span x-text="doc.number"></span></p>
+            </div>
+        </div>
+        <table class="p-table">
+            <thead>
+                <tr>
+                    <th>Quantity</th>
+                    <th>Description</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="item in doc.items">
+                    <tr>
+                        <td class="center" x-text="item.qty"></td>
+                        <td x-text="item.desc"></td>
+                        <td class="right" x-text="formatMoney(item.price)"></td>
+                        <td class="right font-bold" x-text="formatMoney(item.qty * item.price)"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+        <div class="p-summary">
+            <p>GRAND TOTAL (TZS): <span x-text="formatMoney(calcTotal())"></span></p>
+        </div>
+        <div class="bank-details" x-show="doc.type === 'TAX INVOICE'">
+            <p><strong>BANK DETAILS: 42810010869 - NMB BANK ARUSHA BUSINESS CENTRE</strong></p>
+            <p><strong>SAMOS TECHNOLOGY SOLUTION LIMITED</strong></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
